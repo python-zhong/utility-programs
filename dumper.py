@@ -308,18 +308,16 @@ def dump():
                 st.insert('1.0', 'Choose One Item')
             else:
                 content = n[selection[0]].strip()
-                if content and selection[0] != riid:
-                    pass
                 if content:
                     st.insert(END, content)
-                    if selection[0] != riid:
-                        st.config(state=DISABLED)
-                        return                
+                    if selection[0] == riid:
+                        tag_flag = True
                 else:
+                    tag_flag = True
                     st.insert(END, "<No Information>")
-            if not tag_flag:
-                st.tag_add('tag', '1.0', END)
-                st.tag_config('tag', foreground='#808080')
+                if tag_flag:
+                    st.tag_add('tag', '1.0', END)
+                    st.tag_config('tag', foreground='#808080')
             st.config(state=DISABLED)
         tv.bind("<<TreeviewSelect>>", onselect)
         tp.mainloop()
