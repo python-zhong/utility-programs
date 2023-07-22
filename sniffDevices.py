@@ -9,7 +9,7 @@ network = IPv4Network(myself+'/'+MASK, strict=False)
 l = []
 def go(i):
     try:
-        n = ping(str(i), timeout=2, size=32)
+        n = ping(str(i))
     except:
         return
     if n:
@@ -24,7 +24,6 @@ threads.join()
 n = len(l)
 print('There', 'are' if n>1 else 'is', n, 'device'+('s' if n>1 else ''), 'connected to your router:')
 for i in l:
-    fqdn = socket.gethostbyname()
     print(i, end='')
     if i == myself:
         print(' [ME]')
