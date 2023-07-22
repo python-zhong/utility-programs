@@ -182,58 +182,80 @@ def dump():
         sbt = Scrollbar(stf, orient=HORIZONTAL, command=st.xview)
         sbt.pack(side=BOTTOM, fill=X)
         st.config(xscrollcommand=sbt.set)
-        st.insert(END, 'Dumping, please wait ...')
-        st.tag_add('tag', '1.0', END)
+        st.insert(END, 'Dumping, please wait ...\nReading Summary ...')
+        st.tag_add('tag', '1.0', '2.0')
         st.tag_config('tag', foreground='#808080')
+        st.tag_add('tag1', '2.0', END)
+        st.tag_config('tag1', foreground='#505050')
         st.config(state=DISABLED)
+        def update_text(text):
+            st.config(state=NORMAL)
+            st.delete('2.0', END)
+            st.tag_delete('tag1')
+            st.insert(END, '\n'+text)
+            st.tag_add('tag1', '2.0', END)
+            st.tag_config('tag1', foreground='#505050')
+            st.config(state=DISABLED)
         summary = runDumpbin(f, '/summary', isSummary=True)
         if summary is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading Archive Members ...')
         archivemembers = runDumpbin(f, '/archiveMembers')
         if archivemembers is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading CLR Header ...')
         clrheader = runDumpbin(f, '/clrHeader')
         if clrheader is None:
              return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading Dependents ...')
         dependents = runDumpbin(f, '/dependents')
         if dependents is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading Directives ...')
         directives = runDumpbin(f, '/directives')
         if directives is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading Exports ...')
         exports = runDumpbin(f, '/exports')
         if exports is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading FPO ...')
         fpo = runDumpbin(f, '/fpo')
         if fpo is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading Headers ...')
         headers = runDumpbin(f, '/headers', keep_lhead=True)
         if headers is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading Imports ...')
         imports = runDumpbin(f, '/imports')
         if imports is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading Relocations ...')
         relocations = runDumpbin(f, '/relocations')
         if relocations is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading Symbols ...')
         symbols = runDumpbin(f, '/symbols')
         if symbols is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading TLS ...')
         tls = runDumpbin(f, '/tls')
         if tls is None:
             return tp.destroy()
         pgs.step(1/14)
+        update_text('Reading Unwind Info ...')
         unwindinfo = runDumpbin(f, '/unwindinfo')
         if unwindinfo is None:
             return tp.destroy()
@@ -241,6 +263,7 @@ def dump():
         tp.title('Dump of file "%s"' % f)
         st.config(state=NORMAL)
         st.delete('1.0', END)
+        st.tag_delete('tag1')
         st.tag_delete('tag')
         st.insert('1.0', 'Select One Item')
         st.tag_add('tag', '1.0', END)
@@ -262,21 +285,22 @@ def dump():
         n[tv.insert(riid, END, text='Relocations')] = relocations
         n[tv.insert(riid, END, text='Symbols')] = symbols
         n[tv.insert(riid, END, text='TLS')] = tls
-        n[tv.insert(riid, END, text='UnwindInfo')] = unwindinfo
+        n[tv.insert(riid, END, text='Unwind Info')] = unwindinfo
         tag_flag = True
         def onselect(_=None):
             nonlocal tag_flag
             selection = tv.selection()
             st.config(state=NORMAL)
             st.delete('1.0', END)
+            if tag_flag:
+                st.tag_delete('tag')
+                tag_flag = False
             if len(selection) < 1:
                 st.insert('1.0', 'Choose One Item')
             else:
                 content = n[selection[0]].strip()
                 if content and selection[0] != riid:
-                    if tag_flag:
-                        st.tag_delete('tag')
-                        tag_flag = False
+                    st.insert('1.0', content)
                 if content:
                     st.insert(END, content)
                     if selection[0] != riid:
