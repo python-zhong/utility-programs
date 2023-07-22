@@ -309,7 +309,7 @@ def dump():
             else:
                 content = n[selection[0]].strip()
                 if content and selection[0] != riid:
-                    st.insert('1.0', content)
+                    pass
                 if content:
                     st.insert(END, content)
                     if selection[0] != riid:
