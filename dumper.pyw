@@ -7,6 +7,7 @@ from os import path, environ
 from subprocess import run
 from json import loads
 from locale import getencoding
+from threading import Thread
 tk = Tk(className='exporter')
 tk.title('PE Dumper')
 tk.resizable(False, False)
@@ -160,6 +161,14 @@ def dump():
         ('All Files', '*.*')
     ])
     if path.isfile(f):
+        def update_view():
+            while True:
+                try:
+                    tk.update()
+                    tp.update()
+                except:
+                    break
+        Thread(target=update_view).run()
         tp = Toplevel(tk)
         tp.resizable(False, False)
         tp.title('Dumping file "%s" ...' % f)
