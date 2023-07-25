@@ -67,7 +67,7 @@ def ShellExecute(
                     raise TypeError('Invalid argument `lpParameters`: Must be str, bytes, or Iterable that contains str or bytes')
                 p += b'"%s"' % parameter + b' '
             lpParameters = p[:-1]
-        elif isinstance(lpParameters, bytes):
+        elif not isinstance(lpParameters, bytes):
             raise TypeError('Invalid argument `lpParameters`: Must be str, bytes, or Iterable that contains str or bytes')
     if lpDirectory is not None:
         if isinstance(lpDirectory, str):
@@ -82,3 +82,32 @@ def ShellExecute(
     return _ShellExecute(hwnd, lpOperation, lpFile, lpParameters, lpDirectory, nShowCmd)
 def IsUserAnAdmin():
     return _IsUserAnAdmin()
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser('python -m Packages.shell', description='ShellExecute Helper')
+    parser.add_argument(
+        '-s', '--show-cmd',
+        help='Show the Console Host (nShowCmd=SW_SHOW)',
+        action='store_true',
+        dest='showCmd'
+    )
+    parser.add_argument(
+        '-d', '--working-directory', '--directory', '--workdir',
+        help='Set the working directory.',
+        dest='workDir'
+    )
+    parser.add_argument(
+        '-o', '--operation',
+        choices=['edit', 'explore', 'find', 'open', 'print', 'runas'],
+        help='The operation verb to execute',
+        dest='operation'
+    )
+    parser.add_argument(
+        '-a', '--args',
+        help='Arguments to the operation',
+        dest='args'
+    )
+    parser.add_argument('file', help='The file path')
+    res = parser.parse_args()
+    ShellExecute(res.file, SW_SHOW if res.showCmd else SW_HIDE, lpParameters=res.args, lpDirectory=res.workDir, lpOperation=res.operation)
