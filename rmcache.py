@@ -10,7 +10,10 @@ def delete(path: str):
     path = path if path.endswith('/') else path + '/'
     success = 0
     failed = 0
-    information = listdir(path)
+    try:
+        information = listdir(path)
+    except:
+        return success, failed
     for i in information:
         p = path + i
         if isdir(p):
