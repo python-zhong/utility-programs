@@ -4,6 +4,7 @@ from uuid import uuid1
 from pathlib import WindowsPath as _Path, PurePosixPath as URLPath
 from argparse import ArgumentParser
 from time import strftime, localtime
+from traceback import format_exc
 def express_size(size: int, prec: int=2) -> str:
     KB = 2 ** 10
     MB = 2 ** 20
@@ -170,17 +171,17 @@ def child(filename):
         else:
             return Response(f'<span style="color: red;">ERROR:</span> Not a file or directory: {filename}', status=404)
     except Exception as e:
-        name = e.__class__.__name__
-        reason = '<Unknown Reason>'
-        if e.args is not None:
-            reason = ''.join(map(str, e.args))
-        return Response(f'<span style="color: red;">ERROR ({name}):</span>{reason}', status=500)
+        exc = format_exc().strip().split('\n')[-1]
+        return Response(f'<span style="color: red;">ERROR (Python Error):</span> {exc}', status=500)
 if __name__ == '__main__':
     parser = ArgumentParser(description='Simple FTP (mini)')
     parser.add_argument('--path', help='Which path to serve', default=getcwd().replace('\\', '/'))
     parser.add_argument('--host', help="Server's host", default='127.0.0.1')
     parser.add_argument('--port', help="Server's port", type=int, default=5000)
     args = parser.parse_args()
+    args.path.replace("\\", '/')
+    if not args.path.endswith("/"):
+        args.path += "/"
     path = Path(args.path)
     if not path.is_dir():
         parser.error(f'Invalid Path: "{args.path}"')
