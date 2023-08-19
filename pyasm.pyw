@@ -16,6 +16,9 @@ import sys
 import dis
 import types
 from uuid import uuid1
+try:
+    import ctypes;ctypes.oledll.shcore.SetProcessDpiAwareness(1)
+except: pass
 banner     = "======================= Assembly Start ======================="
 banner_end = "======================= Assembly Ended ======================="
 COLOR_POOL = {
@@ -187,14 +190,14 @@ fm = Frame()
 fm.pack(side=TOP, fill=BOTH, padx=5, pady=5)
 lf1 = LabelFrame(fm, text='Python Code')
 lf1.pack(side=LEFT, fill=BOTH)
-text = ScrolledText(lf1, font=font, wrap=NONE)
+text = ScrolledText(lf1, font=font, wrap=NONE, width=60)
 text.pack(side=TOP, fill=BOTH)
 sb1 = Scrollbar(lf1, orient=HORIZONTAL, command=text.xview)
 sb1.pack(side=BOTTOM, fill=BOTH)
 text.config(xscrollcommand=sb1.set)
 lf2 = LabelFrame(fm, text='Assembly Output')
 lf2.pack(side=RIGHT, fill=BOTH)
-res = ScrolledText(lf2, font=font, state='disabled', wrap=NONE)
+res = ScrolledText(lf2, font=font, state='disabled', wrap=NONE, width=85)
 res.pack(side=TOP, fill=BOTH)
 sb2 = Scrollbar(lf2, orient=HORIZONTAL, command=res.xview)
 sb2.pack(side=BOTTOM, fill=BOTH)

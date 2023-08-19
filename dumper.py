@@ -8,6 +8,9 @@ from subprocess import run
 from json import loads
 from locale import getencoding
 from threading import Thread
+try:
+    import ctypes; ctypes.oledll.shcore.SetProcessDpiAwareness(1)
+except: pass
 tk = Tk(className='exporter')
 tk.title('PE Dumper')
 tk.resizable(False, False)
@@ -186,7 +189,7 @@ def dump():
         tv.config(yscrollcommand=sb.set)
         stf = Frame(fm)
         stf.pack(side=RIGHT, fill=BOTH)
-        st = ScrolledText(stf, width=150, height=35, wrap='none')
+        st = ScrolledText(stf, width=150, height=36, wrap='none')
         st.pack(side=TOP, fill=BOTH)
         sbt = Scrollbar(stf, orient=HORIZONTAL, command=st.xview)
         sbt.pack(side=BOTTOM, fill=X)
@@ -323,5 +326,5 @@ def dump():
         tp.mainloop()
 Button(dfm, text='Dump', command=dump).pack(side=LEFT)
 style = Style(tk)
-style.configure('Treeview', rowheight=30)
+style.configure('Treeview', rowheight=25)
 tk.mainloop()

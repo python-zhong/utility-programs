@@ -6,6 +6,9 @@ from tkinter.ttk import *
 from tkinter.font import Font
 from tkinter.scrolledtext import ScrolledText
 from os import getlogin
+try:
+    import ctypes; ctypes.oledll.shcore.SetProcessDpiAwareness(1)
+except: pass
 Value = namedtuple('Value', ['name', 'value', 'type'])
 def Enumerate(func, key):
     index = 0
@@ -56,7 +59,7 @@ style = Style()
 style.configure('Treeview', rowheight=30)
 tvf = Frame(tk)
 tvf.pack(side=LEFT)
-tv = Treeview(tvf, show='tree', selectmode='browse', height=40)
+tv = Treeview(tvf, show='tree', selectmode='browse', height=28)
 tv.pack(side=LEFT, fill=BOTH)
 tfs = Scrollbar(tvf, command=tv.yview, orient=VERTICAL)
 tfs.pack(side=RIGHT, fill=Y)

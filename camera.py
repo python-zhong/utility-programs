@@ -7,6 +7,9 @@ import functools
 import tkinter
 import tkinter.messagebox
 import tkinter.filedialog
+try:
+    import ctypes; ctypes.oledll.shcore.SetProcessDpiAwareness(1)
+except: pass
 FILE_FORMATS = [
     # Portable Network Graphics Files
     '.png',
@@ -100,7 +103,6 @@ while True:
     k = cv2.waitKey(1) & 0xFF
     if not video_mode:
         if k == ord('c'):
-            capture.release()
             while True:
                 modified_img = img.copy()
                 cv2.rectangle(modified_img, (0, 0), (250, 60), (200, 0, 0), thickness=cv2.FILLED)
@@ -122,7 +124,6 @@ while True:
                         break
                 elif k == ord('c'):
                     break
-            capture.open(0)
         elif k == ord('q') or k == ord('e'):
             break
         elif k == ord('v'):
