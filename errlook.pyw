@@ -9,6 +9,7 @@ try:
 except:
     pass
 tk = Tk(className='errlook')
+tk.resizable(False, False)
 font = Font(family='Consolas', size=10)
 tk.title('Error Look')
 ef = Frame(tk)
