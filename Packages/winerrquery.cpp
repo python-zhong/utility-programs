@@ -1,8 +1,8 @@
-#define PY_SSIZE_T_CLEAN
-#define Py_LIMITED_API 0x03050000
-#include <Python.h>
 #include <Windows.h>
 extern "C" {
+    #define PY_SSIZE_T_CLEAN
+    #define Py_LIMITED_API 0x03050000
+    #include <Python.h>
     PyDoc_STRVAR(winerrquery_query_doc, "query(code: int, language: Optional[int]=None) -> Optional[str]\nQuery Windows Errno Message.\nParameter `code` is from 0x0 to 0xFFFFFFFF.\nParameter `lang` is a LANG_* constant. Default None.\nNote: if `lang` is None, the message will use your System Language.\nReturns None if the message is not found.");
     PyObject* winerrquery_query(PyObject* self, PyObject* args, PyObject* kwargs) {
         PyObject* obj = NULL;
