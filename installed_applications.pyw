@@ -54,26 +54,25 @@ def get_local_installations():
 
 tk = Tk(className='pkgmgr')
 tk.title('Installed Packages')
-tk.resizable(False, False)
 style = Style()
-style.configure('Treeview', rowheight=30)
+style.configure('Treeview', rowheight=25)
 tvf = Frame(tk)
-tvf.pack(side=LEFT)
-tv = Treeview(tvf, show='tree', selectmode='browse', height=28)
-tv.pack(side=LEFT, fill=BOTH)
+tvf.pack(side=LEFT, fill=BOTH, expand=True)
+tv = Treeview(tvf, show='tree', selectmode='browse')
+tv.pack(side=LEFT, fill=BOTH, expand=True)
 tfs = Scrollbar(tvf, command=tv.yview, orient=VERTICAL)
 tfs.pack(side=RIGHT, fill=Y)
 tv.config(yscrollcommand=tfs.set)
 dtf = LabelFrame(tk, text='Detail')
-dtf.pack(side=RIGHT, fill=BOTH, padx=5, pady=5)
+dtf.pack(side=RIGHT, fill=BOTH, padx=2, pady=2, expand=True)
 dt = ScrolledText(
     dtf,
     font=Font(family='Consolas', size=10),
     wrap='none',
-    height=35,
-    width=120
+    height=30,
+    width=90
 )
-dt.pack(side=TOP, fill=BOTH, padx=5)
+dt.pack(side=TOP, fill=BOTH, expand=True)
 dts = Scrollbar(dtf, orient=HORIZONTAL, command=dt.xview)
 dts.pack(side=BOTTOM, fill=X)
 dt.config(xscrollcommand=dts.set)
@@ -96,7 +95,7 @@ def update_sections():
     for k, v in get_local_installations().items():
         selections[tv.insert(ID_LI, END, text=k)] = (k, v, 'Local')
 m = Menu()
-tk.config(menu=m, padx=10, pady=10)
+tk.config(menu=m, padx=5, pady=5)
 fm = Menu(tearoff=0)
 m.add_cascade(label='File', menu=fm)
 fm.add_command(label='Update', command=update_sections)
@@ -116,12 +115,12 @@ def onselect(_=None):
         tags.append('note')
     else:
         key, values, _ = selections[selection[0]]
-        keys = [str(i.name) for i in values] + ['UUID/Name']
+        keys = [str(i.name) for i in values] + ['ID']
         longest = 0
         for i in keys:
             if len(i) > longest:
                 longest = len(i)
-        text = f"{{:<{longest}}}: {{}}\n".format('UUID/Name', key)
+        text = f"{{:<{longest}}}: {{}}\n".format('ID', key)
         text += '\n'.join([f'{{:<{longest}}}: {{}}'.format(v.name, v.value if v.value is not None else '<Not Set>') for v in values])
         dt.insert('1.0', text.strip())
         i = 0

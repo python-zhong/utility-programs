@@ -14,18 +14,20 @@ tk.title('Error Look')
 ef = Frame(tk)
 ef.pack(side=TOP, fill=X)
 result = Text(tk, font=font, background='#F4F4F4', state=DISABLED, width=45, height=15)
-result.pack(side=BOTTOM, fill=BOTH)
+result.pack(side=BOTTOM, fill=BOTH, expand=True)
 Label(ef, text='Errno:').pack(side=LEFT)
 code = Entry(ef, width=10, font=font)
 code.pack(side=LEFT)
 def f(_=None):
     c = code.get().lower().strip()
     try:
-        if 'x' in c or 'a' in c or 'b' in c or 'c' in c or 'd' in c or 'e' in c or 'f' in c:
+        if 'x' in c:
             num = int(c, base=16)
         elif 'b' in c:
             num = int(c, base=2)
-        elif c.startswith('0') or 'o' in c:
+        elif c.startswith("0o"):
+            num = int(c, base=8)
+        elif c.startswith("0") and len(c) > 1:
             num = int(c, base=8)
         else:
             num = int(c)
@@ -47,5 +49,4 @@ query = Button(ef, text='Find', command=f)
 query.pack(side=LEFT)
 code.bind('<Return>', f)
 Button(ef, text='Exit', command=tk.destroy).pack(side=RIGHT)
-tk.resizable(False, False)
 tk.mainloop()
