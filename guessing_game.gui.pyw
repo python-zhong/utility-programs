@@ -71,10 +71,10 @@ def guess(_=None):
         tk.destroy()
         return
     elif n > secret:
-        showinfo("Info", "The number is bigger!")
+        showinfo("Info", "Too Big!")
         hs.insert(END, 'Round %-3d: %6d > secret number' % (rounds.get(), n))
     elif n < secret:
-        showinfo("Info", "The number is smaller!")
+        showinfo("Info", "Too Small!")
         hs.insert(END, 'Round %-3d: %6d < secret number' % (rounds.get(), n))
     rounds.set(rounds.get()+1)
     num.focus()
