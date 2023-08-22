@@ -55,7 +55,7 @@ def get_local_installations():
 tk = Tk(className='pkgmgr')
 tk.title('Installed Packages')
 style = Style()
-style.configure('Treeview', rowheight=25)
+style.configure('Treeview', rowheight=35)
 tvf = Frame(tk)
 tvf.pack(side=LEFT, fill=BOTH, expand=True)
 tv = Treeview(tvf, show='tree', selectmode='browse')
@@ -63,6 +63,7 @@ tv.pack(side=LEFT, fill=BOTH, expand=True)
 tfs = Scrollbar(tvf, command=tv.yview, orient=VERTICAL)
 tfs.pack(side=RIGHT, fill=Y)
 tv.config(yscrollcommand=tfs.set)
+
 dtf = LabelFrame(tk, text='Detail')
 dtf.pack(side=RIGHT, fill=BOTH, padx=2, pady=2, expand=True)
 dt = ScrolledText(
@@ -79,7 +80,7 @@ dt.config(xscrollcommand=dts.set)
 tags = []
 dt.insert('1.0', 'Choose One Item')
 dt.tag_add('note', '1.0', END)
-dt.tag_config('note', foreground='#AAAA00')
+dt.tag_config('note', foreground='#AAAAAA')
 tags.append('note')
 dt.config(state=DISABLED)
 ID_UI = tv.insert('', END, text='Installed For User `%s`' % getlogin(), tags='DEFAULT')
@@ -111,7 +112,7 @@ def onselect(_=None):
     if not selection or ID_LI in selection or ID_UI in selection:
         dt.insert('1.0', 'Choose One Item')
         dt.tag_add('note', '1.0', END)
-        dt.tag_config('note', foreground='#AAAA00')
+        dt.tag_config('note', foreground='#AAAAAA')
         tags.append('note')
     else:
         key, values, _ = selections[selection[0]]
