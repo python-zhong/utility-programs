@@ -3,6 +3,7 @@ from tkinter.ttk import *
 from tkinter.font import Font
 from tkinter.messagebox import showinfo
 from tkinter.scrolledtext import ScrolledText
+import random
 import sys
 if sys.platform == 'win32':
     try:
@@ -22,6 +23,7 @@ def generate(questions: int) -> list[list[int]]:
         for num in range(1, MAX):
             if ('{:0>'+str(questions)+'b}').format(num)[-i-1] == '1':
                 numbers.append(num)
+        random.shuffle(numbers)
         res.append(numbers)
     return res
 
@@ -53,7 +55,7 @@ for question in questions:
     printed_question.clear()
 tk = Tk(className='Guess Your Guess')
 
-font = Font(tk, family='Consolas', size=15)
+font = Font(tk, family='Consolas', size=20) # 15
 DESTROYED = False
 # ---------- Prompt User - Start ----------
 def prompt_user():
