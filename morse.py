@@ -1,4 +1,10 @@
 from Packages.consoleutil import choice_in_options, input, style_output, putchars, putnewline
+try:
+    from winsound import Beep
+except:
+    Beep = None
+else:
+    from time import sleep
 MORSE_CODES_L = {
     'A': '.-',
     'Ä': '.-.-',
@@ -62,7 +68,7 @@ putchars("Morse Code Utility V0.0.1", newline=True)
 while True:
     try:
         i = choice_in_options(['Query by Morse Code', 'Query by Letter', 'Translate Morse Code sentence', 'Convert sentence to Morse Code sentence', 'Exit'])
-    except:
+    except KeyboardInterrupt:
         break
     else:
         if i == 0:
@@ -95,11 +101,19 @@ while True:
                     '"',
                     style_output(n, fg='bright_white', bold=True),
                     '" means "',
-                    style_output(MORSE_CODES_L[n.upper()], fg='bright_white', bold=True),
-                    '"',
-                    for_color=True,
-                    newline=True
                 )
+                if Beep is not None:
+                    for i in MORSE_CODES_L[n.upper()]:
+                        if i == '.':
+                            Beep(3000, 100)
+                            sleep(0.4)
+                        elif i == '-':
+                            Beep(3000, 300)
+                            sleep(0.2)
+                        putchars(style_output(i, fg='bright_white', bold=True), for_color=True)
+                else:
+                    putchars(style_output(MORSE_CODES_L[n.upper()], fg='bright_white', bold=True), for_color=True)
+                putchars('" in Morse Code.', newline=True)
         elif i == 2:
             try:
                 putchars(style_output("Note: ", fg='bright_white', bold=True), 'Use 2 or more spaces in the sentence to refer a space in the translated sentence.', for_color=True, newline=True)
@@ -133,6 +147,21 @@ while True:
                         result += ' '
                     result += ' '
                 result = result.strip()
-                putchars('Translated: ', style_output(result, fg='bright_white', bold=True), for_color=True, newline=True)
+                if Beep is not None:
+                    putchars('*Translated*: ')
+                    for i in result:
+                        if i == '.':
+                            Beep(3000, 100)
+                            sleep(0.4)
+                        elif i == '-':
+                            Beep(3000, 300)
+                            sleep(0.2)
+                        elif i == ' ':
+                            sleep(0.6)
+                        putchars(style_output(i, fg='bright_white', bold=True), for_color=True)
+                    sleep(0.1)
+                    putnewline()
+                else:
+                    putchars('Translated: ', style_output(result, fg='bright_white', bold=True), for_color=True, newline=True)
         elif i == 4:
             break
