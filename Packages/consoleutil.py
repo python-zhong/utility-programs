@@ -5,6 +5,7 @@ fix_windows_console()
 GENERIC_FILTER = lambda n: True
 ASCII_FILTER = lambda n: 0x20 <= ord(n) < 0x7F
 NUMBER_FILTER = lambda n: 0x30 <= ord(n) <= 0x39
+__CHOICE_FILTER_BUILDER = lambda *choices: lambda n: n in choices
 def style_output(
         text,
         fg=None, bg=None,
@@ -168,9 +169,15 @@ def getchars(echo=None, filter=None, min=None, max=None):
         if n == '\n' or n == '\r' and len(data) >= min:
             putnewline()
             break
-        elif n in ['\003', '\004', '\032']:
-                  #  ^C      ^D      ^Z 
+        elif n == '\003':
+            putchars('^C')
             raise KeyboardInterrupt
+        elif n == '\004':
+            putchars('^D')
+            raise EOFError
+        elif n == '\032':
+            putchars('^Z')
+            raise EOFError
         elif n == '\b':
             if data and current_index > 0:
                 data = data[:current_index-1] + data[current_index:]
@@ -230,7 +237,7 @@ def choice_in_options(options, tip="Choose an operation:"):
     while True:
         for index, item in enumerate(options):
             putchars('  [', style_output(index, fg="bright_white", bold=True, underline=True),']: ', style_output(item, fg='bright_white'), for_color=True, newline=True)
-        num = input('> ', filter=NUMBER_FILTER, min=1, max=len(str(len(options))))
+        num = input('> ', filter=__CHOICE_FILTER_BUILDER(*tuple(map(str, range(len(options))))), min=1, max=len(str(len(options))))
         num = int(num)
         if 0 <= num < len(options):
             return num
