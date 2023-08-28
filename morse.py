@@ -104,13 +104,12 @@ while True:
                 )
                 if Beep is not None:
                     for i in MORSE_CODES_L[n.upper()]:
+                        putchars(style_output(i, fg='bright_white', bold=True), for_color=True)
                         if i == '.':
                             Beep(3000, 100)
-                            sleep(0.4)
+                            sleep(0.1)
                         elif i == '-':
                             Beep(3000, 300)
-                            sleep(0.2)
-                        putchars(style_output(i, fg='bright_white', bold=True), for_color=True)
                 else:
                     putchars(style_output(MORSE_CODES_L[n.upper()], fg='bright_white', bold=True), for_color=True)
                 putchars('" in Morse Code.', newline=True)
@@ -150,15 +149,14 @@ while True:
                 if Beep is not None:
                     putchars('*Translated*: ')
                     for i in result:
+                        putchars(style_output(i, fg='bright_white', bold=True), for_color=True)
                         if i == '.':
                             Beep(3000, 100)
-                            sleep(0.4)
+                            sleep(0.1)
                         elif i == '-':
                             Beep(3000, 300)
-                            sleep(0.2)
                         elif i == ' ':
-                            sleep(0.6)
-                        putchars(style_output(i, fg='bright_white', bold=True), for_color=True)
+                            sleep(0.4)
                     sleep(0.1)
                     putnewline()
                 else:
