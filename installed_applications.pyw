@@ -1,14 +1,16 @@
-from winreg import OpenKeyEx, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, EnumKey, EnumValue, KEY_READ
-import atexit
+from atexit import register as onexit
 from collections import namedtuple
+from os import getlogin
 from tkinter import *
 from tkinter.ttk import *
 from tkinter.font import Font
 from tkinter.scrolledtext import ScrolledText
-from os import getlogin
+from winreg import OpenKeyEx, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, EnumKey, EnumValue, KEY_READ
 try:
     import ctypes; ctypes.oledll.shcore.SetProcessDpiAwareness(1)
 except: pass
+from sys import maxsize
+IS_X64 = maxsize > 2 ** 32
 Value = namedtuple('Value', ['name', 'value', 'type'])
 def Enumerate(func, key):
     index = 0
@@ -25,33 +27,50 @@ with OpenKeyEx(HKEY_CURRENT_USER, 'Software', 0, KEY_READ) as _US:
         with OpenKeyEx(_UM, 'Windows', 0, KEY_READ) as _UW:
             with OpenKeyEx(_UW, 'CurrentVersion', 0, KEY_READ) as _UC:
                 UU = OpenKeyEx(_UC, 'Uninstall', 0, KEY_READ)
+    if IS_X64:
+        with OpenKeyEx(_US, 'WOW6432Node') as _WOW64:
+            with OpenKeyEx(_WOW64, 'Microsoft', 0, KEY_READ) as _UM:
+                with OpenKeyEx(_UM, 'Windows', 0, KEY_READ) as _UW:
+                    with OpenKeyEx(_UW, 'CurrentVersion', 0, KEY_READ) as _UC:
+                        UUW64 = OpenKeyEx(_UC, 'Uninstall', 0, KEY_READ)
+    else:
+        UUW64 = None
 with OpenKeyEx(HKEY_LOCAL_MACHINE, 'Software', 0, KEY_READ) as _LS:
     with OpenKeyEx(_LS, 'Microsoft', 0, KEY_READ) as _LM:
         with OpenKeyEx(_LM, 'Windows', 0, KEY_READ) as _LW:
             with OpenKeyEx(_LW, 'CurrentVersion', 0, KEY_READ) as _LC:
                 LU = OpenKeyEx(_LC, 'Uninstall', 0, KEY_READ)
-@atexit.register
-def onexit():
+    if IS_X64:
+        with OpenKeyEx(_LS, 'WOW6432Node') as _WOW64:
+            with OpenKeyEx(_WOW64, 'Microsoft', 0, KEY_READ) as _LM:
+                with OpenKeyEx(_LM, 'Windows', 0, KEY_READ) as _LW:
+                    with OpenKeyEx(_LW, 'CurrentVersion', 0, KEY_READ) as _LC:
+                        LUW64 = OpenKeyEx(_LC, 'Uninstall', 0, KEY_READ)
+    else:
+        LUW64=None
+@onexit
+def e():
     UU.Close()
     LU.Close()
 
-def get_user_installations():
-    installations = {}
-    for k in Enumerate(EnumKey, UU):
-        installations[k] = []
-        with OpenKeyEx(UU, k, 0, KEY_READ) as key:
-            for name, value, t in Enumerate(EnumValue, key):
-                installations[k].append(Value(name, value, t))
-    return installations
-def get_local_installations():
-    installations = {}
-    for k in Enumerate(EnumKey, LU):
-        installations[k] = []
-        with OpenKeyEx(LU, k, 0, KEY_READ) as key:
-            for name, value, t in Enumerate(EnumValue, key):
-                installations[k].append(Value(name, value, t))
-    return installations
-
+def _WRAPPER(key):
+    def _INNER(*, _key=key):
+        installations = {}
+        for k in Enumerate(EnumKey, _key):
+            installations[k] = []
+            with OpenKeyEx(_key, k, 0, KEY_READ) as key:
+                for name, value, t in Enumerate(EnumValue, key):
+                    installations[k].append(Value(name, value, t))
+        return installations
+    return _INNER
+get_user_installations = _WRAPPER(UU)
+get_local_installations = _WRAPPER(LU)
+if IS_X64:
+    get_user_installations_wow = _WRAPPER(UUW64)
+    get_local_installations_wow = _WRAPPER(LUW64)
+else:
+    get_user_installations_wow = None
+    get_local_installations_wow = None
 tk = Tk(className='pkgmgr')
 tk.title('Installed Packages')
 style = Style()
@@ -85,16 +104,32 @@ tags.append('note')
 dt.config(state=DISABLED)
 ID_UI = tv.insert('', END, text='Installed For User `%s`' % getlogin(), tags='DEFAULT')
 ID_LI = tv.insert('', END, text='Installed For All Users', tags='DEFAULT')
+if IS_X64:
+    ID_UI32 = tv.insert(ID_UI, index=END, text='x32', tags='DEFAULT')
+    ID_UI64 = tv.insert(ID_UI, index=END, text='x64', tags='DEFAULT')
+    ID_LI32 = tv.insert(ID_LI, index=END, text='x32', tags='DEFAULT')
+    ID_LI64 = tv.insert(ID_LI, index=END, text='x64', tags='DEFAULT')
 selections = {}
 def update_sections():
     tv.selection_clear()
     if selections:
         tv.delete(*tuple(selections.keys()))
         selections.clear()
-    for k, v in get_user_installations().items():
-        selections[tv.insert(ID_UI, END, text=k)] = (k, v, 'User')
-    for k, v in get_local_installations().items():
-        selections[tv.insert(ID_LI, END, text=k)] = (k, v, 'Local')
+    if IS_X64:
+        for k, v in get_user_installations().items():
+            selections[tv.insert(ID_UI64, END, text=k)] = (k, v, 'User')
+        for k, v in get_local_installations().items():
+            selections[tv.insert(ID_LI64, END, text=k)] = (k, v, 'Local')
+        for k, v in get_user_installations_wow().items():
+            selections[tv.insert(ID_UI32, END, text=k)] = (k, v, 'User')
+        for k, v in get_local_installations_wow().items():
+            selections[tv.insert(ID_LI32, END, text=k)] = (k, v, 'Local')
+
+    else:
+        for k, v in get_user_installations().items():
+            selections[tv.insert(ID_UI, END, text=k)] = (k, v, 'User')
+        for k, v in get_local_installations().items():
+            selections[tv.insert(ID_LI, END, text=k)] = (k, v, 'Local')
 m = Menu()
 tk.config(menu=m, padx=5, pady=5)
 fm = Menu(tearoff=0)
@@ -109,13 +144,14 @@ def onselect(_=None):
         dt.tag_delete(*tags)
         tags.clear()
     dt.delete('1.0', END)
-    if not selection or ID_LI in selection or ID_UI in selection:
+    try:
+        key, values, _ = selections[selection[0]]
+    except LookupError:
         dt.insert('1.0', 'Choose One Item')
         dt.tag_add('note', '1.0', END)
         dt.tag_config('note', foreground='#AAAAAA')
         tags.append('note')
     else:
-        key, values, _ = selections[selection[0]]
         keys = [str(i.name) for i in values] + ['ID']
         longest = 0
         for i in keys:
