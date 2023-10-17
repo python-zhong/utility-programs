@@ -1,4 +1,4 @@
-from Packages.consoleutil import choice_in_options, input, style_output, putchars, putnewline
+from Packages.consoleutil import choice_in_options, input, format_text, putchars, putnewline
 try:
     from winsound import Beep
 except:
@@ -79,13 +79,13 @@ while True:
                 continue
             else:
                 if n not in MORSE_CODES_C:
-                    putchars(style_output('ERROR: ', fg='red', bold=True), 'Code not found', for_color=True, newline=True)
+                    putchars(format_text('ERROR: ', fg='red', bold=True), 'Code not found', for_color=True, newline=True)
                 else:
                     putchars(
                         '"',
-                        style_output(n, fg='bright_white', bold=True),
+                        format_text(n, fg='bright_white', bold=True),
                         '" means "',
-                        style_output(MORSE_CODES_C[n], fg='bright_white', bold=True),
+                        format_text(MORSE_CODES_C[n], fg='bright_white', bold=True),
                         '"',
                         for_color=True,
                         newline=True
@@ -99,23 +99,23 @@ while True:
             else:
                 putchars(
                     '"',
-                    style_output(n, fg='bright_white', bold=True),
+                    format_text(n, fg='bright_white', bold=True),
                     '" means "',
                 )
                 if Beep is not None:
                     for i in MORSE_CODES_L[n.upper()]:
-                        putchars(style_output(i, fg='bright_white', bold=True), for_color=True)
+                        putchars(format_text(i, fg='bright_white', bold=True), for_color=True)
                         if i == '.':
                             Beep(3000, 100)
                             sleep(0.1)
                         elif i == '-':
                             Beep(3000, 300)
                 else:
-                    putchars(style_output(MORSE_CODES_L[n.upper()], fg='bright_white', bold=True), for_color=True)
+                    putchars(format_text(MORSE_CODES_L[n.upper()], fg='bright_white', bold=True), for_color=True)
                 putchars('" in Morse Code.', newline=True)
         elif i == 2:
             try:
-                putchars(style_output("Note: ", fg='bright_white', bold=True), 'Use 2 or more spaces in the sentence to refer a space in the translated sentence.', for_color=True, newline=True)
+                putchars(format_text("Note: ", fg='bright_white', bold=True), 'Use 2 or more spaces in the sentence to refer a space in the translated sentence.', for_color=True, newline=True)
                 n = input('Sentence  : ', filter=lambda k: k in '.- ', min=1)
             except:
                 putnewline()
@@ -127,10 +127,10 @@ while True:
                         if words[-1:] != ' ':
                             words += ' '
                     elif i not in MORSE_CODES_C:
-                        putchars(style_output('ERROR: ', fg='red', bold=True), 'Code not found: "%s"' % style_output(i, rg='bright_write', bold=True), for_color=True, newline=True)
+                        putchars(format_text('ERROR: ', fg='red', bold=True), 'Code not found: "%s"' % format_text(i, rg='bright_write', bold=True), for_color=True, newline=True)
                     else:
                         words += MORSE_CODES_C[i]
-                putchars('Translated: ', style_output(words, fg='bright_white', bold=True), for_color=True, newline=True)
+                putchars('Translated: ', format_text(words, fg='bright_white', bold=True), for_color=True, newline=True)
         elif i == 3:
             try:
                 n = input('Sentence  : ', filter=lambda k: k.upper() in tuple(MORSE_CODES_L) + (' ', ), min=1)
@@ -149,7 +149,7 @@ while True:
                 if Beep is not None:
                     putchars('*Translated*: ')
                     for i in result:
-                        putchars(style_output(i, fg='bright_white', bold=True), for_color=True)
+                        putchars(format_text(i, fg='bright_white', bold=True), for_color=True)
                         if i == '.':
                             Beep(3000, 100)
                             sleep(0.1)
@@ -160,6 +160,6 @@ while True:
                     sleep(0.1)
                     putnewline()
                 else:
-                    putchars('Translated: ', style_output(result, fg='bright_white', bold=True), for_color=True, newline=True)
+                    putchars('Translated: ', format_text(result, fg='bright_white', bold=True), for_color=True, newline=True)
         elif i == 4:
             break

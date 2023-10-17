@@ -1,6 +1,7 @@
 import re, os, sys, atexit
 from msvcrt import get_osfhandle
 CSI = '\033['
+OSC = '\033]'
 BEL = '\a'
 def code_to_chars(code):
     return CSI + str(code) + 'm'
